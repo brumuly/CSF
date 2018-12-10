@@ -1,0 +1,236 @@
+---
+title: "CSF"
+author: "Blake"
+date: "11/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(reshape2)
+library(plotly)
+library(plyr)
+library(ggplot2)
+library(DAAG)
+d1 <- read.csv("CSFData.csv")
+d1 <- CSFData
+d1 <- as.data.frame(d1)
+d2 <- select(d1, 13, 3, 7)
+d3 <- reshape(d2, dir = "wide", idvar = "InstitutionStudentSurveys__student_id", timevar = "SurveyQuestions__code")
+d3 <-d3[,c(1,6,4,10,7, 2, 9, 11, 8, 3, 5)]
+colnames(d3) <- c("ID", "Survey_Question1", "Survey_Question2", "Survey_Question3", "Survey_Question4", "Survey_Question5", "Survey_Question6", "Survey_Question7", "Survey_Question8", "Survey_Question9", "Survey_Question10")
+
+# reassign terminology
+d3$Survey_Question2[d3$Survey_Question2 == "96"] <- "Male"
+d3$Survey_Question2[d3$Survey_Question2 == "97"] <- "Female"
+d3$Survey_Question3[d3$Survey_Question3 == "98"] <- "Grade 1"
+d3$Survey_Question3[d3$Survey_Question3 == "99"] <- "Grade 2"
+d3$Survey_Question3[d3$Survey_Question3 == "100"] <- "Grade 3"
+d3$Survey_Question3[d3$Survey_Question3 == "101"] <- "Grade 4"
+d3$Survey_Question3[d3$Survey_Question3 == "102"] <- "Grade 5"
+d3$Survey_Question3[d3$Survey_Question3 == "103"] <- "Grade 6"
+d3$Survey_Question4[d3$Survey_Question4 == "106"] <- "Advanced"
+d3$Survey_Question4[d3$Survey_Question4 == "105"] <- "Intermediate"
+d3$Survey_Question4[d3$Survey_Question4 == "104"] <- "Beginner"
+d3$Survey_Question5[d3$Survey_Question5 == "107"] <- "Once a week"
+d3$Survey_Question5[d3$Survey_Question5 == "108"] <- "Once every two weeks"
+d3$Survey_Question5[d3$Survey_Question5 == "109"] <- "Once a month"
+d3$Survey_Question5[d3$Survey_Question5 == "110"] <- "Once every two months"
+d3$Survey_Question5[d3$Survey_Question5 == "111"] <- "Almost never"
+d3$Survey_Question6[d3$Survey_Question6 == "112"] <- "High"
+d3$Survey_Question6[d3$Survey_Question6 == "113"] <- "Middle"
+d3$Survey_Question6[d3$Survey_Question6 == "114"] <- "Low"
+d3$Survey_Question7[d3$Survey_Question7 == "115"] <- "Never"
+d3$Survey_Question7[d3$Survey_Question7 == "116"] <- "1-30 minutes"
+d3$Survey_Question7[d3$Survey_Question7 == "117"] <- "30-60 minutes"
+d3$Survey_Question7[d3$Survey_Question7 == "118"] <- "60-90 minutes"
+d3$Survey_Question7[d3$Survey_Question7 == "119"] <- "More than 90 minutes"
+d3$Survey_Question8[d3$Survey_Question8 == "120"] <- "Yes"
+d3$Survey_Question8[d3$Survey_Question8 == "121"] <- "No"
+d3$Survey_Question9[d3$Survey_Question9 == "122"] <- "Never attended"
+d3$Survey_Question9[d3$Survey_Question9 == "123"] <- "< than = to 3 months"
+d3$Survey_Question9[d3$Survey_Question9 == "124"] <- "4-6 months"
+d3$Survey_Question9[d3$Survey_Question9 == "125"] <- "7-9 months"
+d3$Survey_Question9[d3$Survey_Question9 == "126"] <- "> than = to 10 months"
+
+# Frequency Bar plots
+c <- as.data.frame(table(d3$Survey_Question1, useNA = "ifany"))
+colnames(c)[1] <- "Age"
+T <- ggplot(c, aes(Age, Freq)) +   
+    geom_bar(aes(fill = Age, color=Age), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t=ggplotly(T + ggtitle("Frequency of Students' Age"), tooltip = c("x","y"))
+t
+
+c1 <- table(d3$Survey_Question2, useNA = "ifany")
+c1 <- as.data.frame(table(d3$Survey_Question2, useNA = "ifany"))
+colnames(c1)[1] <- "Gender"
+T1 <- ggplot(c1, aes(Gender, Freq)) +   
+    geom_bar(aes(fill = Gender, color=Gender), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t1=ggplotly(T1 + ggtitle("Frequency of Students' Gender"), tooltip = c("x","y"))
+t1
+
+c2 <- table(d3$Survey_Question3, useNA = "ifany")
+c2 <- as.data.frame(table(d3$Survey_Question3, useNA = "ifany"))
+colnames(c2)[1] <- "Grade"
+T2 <- ggplot(c2, aes(Grade, Freq)) +   
+    geom_bar(aes(fill = Grade, color=Grade), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t2=ggplotly(T2 + ggtitle("Frequency of Students' Grade"), tooltip = c("x","y"))
+t2
+
+c3 <- table(d3$Survey_Question4, useNA = "ifany")
+c3 <- as.data.frame(table(d3$Survey_Question4, useNA = "ifany"))
+colnames(c3)[1] <- "Level"
+T3 <- ggplot(c3, aes(Level, Freq)) +   
+    geom_bar(aes(fill = Level, color=Level), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t3=ggplotly(T3 + ggtitle("Frequency of Students' Level"), tooltip = c("x","y"))
+t3
+
+c4 <- table(d3$Survey_Question5, useNA = "ifany")
+c4 <- as.data.frame(table(d3$Survey_Question5, useNA = "ifany"))
+colnames(c4)[1] <- "Absent"
+T4 <- ggplot(c4, aes(Absent, Freq)) +   
+    geom_bar(aes(fill = Absent, color=Absent), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t4=ggplotly(T4 + ggtitle("Frequency of Students' Absenteeism"), tooltip = c("x","y"))
+t4
+
+c5 <- table(d3$Survey_Question6, useNA = "ifany")
+c5 <- as.data.frame(table(d3$Survey_Question6, useNA = "ifany"))
+colnames(c5)[1] <- "SES"
+T5 <- ggplot(c5, aes(SES, Freq)) +   
+    geom_bar(aes(fill = SES, color=SES), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t5=ggplotly(T5 + ggtitle("Frequency of Students' SES"), tooltip = c("x","y"))
+t5
+
+c6 <- table(d3$Survey_Question7, useNA = "ifany")
+c6 <- as.data.frame(table(d3$Survey_Question7, useNA = "ifany"))
+colnames(c6)[1] <- "Homework"
+T6 <- ggplot(c6, aes(Homework, Freq)) +   
+    geom_bar(aes(fill = Homework, color=Homework), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t6=ggplotly(T6 + ggtitle("Frequency of Students' Time Spent on Homework"), tooltip = c("x","y"))
+t6
+
+c7 <- table(d3$Survey_Question8, useNA = "ifany")
+c7 <- as.data.frame(table(d3$Survey_Question8, useNA = "ifany"))
+colnames(c7)[1] <- "Extra"
+T7 <- ggplot(c7, aes(Extra, Freq)) +   
+    geom_bar(aes(fill = Extra, color=Extra), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t7=ggplotly(T7 + ggtitle("Frequency of Students' Attending Extra Mathematics classes"), tooltip = c("x","y"))
+t7
+
+c8 <- table(d3$Survey_Question9, useNA = "ifany")
+c8 <- as.data.frame(table(d3$Survey_Question9, useNA = "ifany"))
+colnames(c8)[1] <- "Months"
+T8 <- ggplot(c8, aes(Months, Freq)) +   
+    geom_bar(aes(fill = Months, color=Months), position = "dodge", stat="identity")+ theme(axis.text.x=element_text(angle=90, hjust=1))
+t8=ggplotly(T8 + ggtitle("Frequency of Months Students Attended Extra Mathematics classes"), tooltip = c("x","y"))
+t8
+
+# Descriptive stats for Question 10
+stat.desc(d3 [, c(11)], basic=F)
+
+# QQ plot - Data seems moderately normally distributed
+qqline(d3 [, c(11)], col = "steelblue", lwd = 2)
+
+#boxplot for Question 10
+p <- plot_ly(y = d3$Survey_Question10, type = "box",  name = ("Student's current grade in the Mathematics course"), boxpoints = "all", jitter = 0.3,
+             pointpos = -1.8)
+p
+
+#Anova
+res.aov <- aov(d3$Survey_Question10 ~ d3$Survey_Question2, data = d3)
+summary(res.aov)
+
+res.aov1 <- aov(d3$Survey_Question10 ~ d3$Survey_Question3, data = d3)
+summary(res.aov1)
+
+res.aov2 <- aov(d3$Survey_Question10 ~ d3$Survey_Question4, data = d3)
+summary(res.aov2)
+
+res.aov3 <- aov(d3$Survey_Question10 ~ d3$Survey_Question5, data = d3)
+summary(res.aov3)
+
+res.aov4 <- aov(d3$Survey_Question10 ~ d3$Survey_Question6, data = d3)
+summary(res.aov4)
+
+res.aov5 <- aov(d3$Survey_Question10 ~ d3$Survey_Question7, data = d3)
+summary(res.aov5)
+
+res.aov6 <- aov(d3$Survey_Question10 ~ d3$Survey_Question8, data = d3)
+summary(res.aov6)
+
+res.aov7 <- aov(d3$Survey_Question10 ~ d3$Survey_Question8, data = d3)
+summary(res.aov7)
+
+#Chi-Square
+d4 <- d3
+d4$Survey_Question10[d4$Survey_Question10 > "89"] <- "A"
+d4$Survey_Question10[d4$Survey_Question10 > "79" & d4$Survey_Question10 < "90"] <- "B"
+d4$Survey_Question10[d4$Survey_Question10 > "69" & d4$Survey_Question10 < "80"] <- "C"
+d4$Survey_Question10[d4$Survey_Question10 > "59" & d4$Survey_Question10 < "70"] <- "D"
+d4$Survey_Question10[d4$Survey_Question10 < "59"] <- "F"
+
+d4$Survey_Question1 <- as.factor(d4$Survey_Question1)
+d4$Survey_Question2 <- as.factor(d4$Survey_Question2)
+d4$Survey_Question3 <- as.factor(d4$Survey_Question3)
+d4$Survey_Question4 <- as.factor(d4$Survey_Question4)
+d4$Survey_Question5 <- as.factor(d4$Survey_Question5)
+d4$Survey_Question6 <- as.factor(d4$Survey_Question6)
+d4$Survey_Question7 <- as.factor(d4$Survey_Question7)
+d4$Survey_Question8 <- as.factor(d4$Survey_Question8)
+d4$Survey_Question9 <- as.factor(d4$Survey_Question9)
+d4$Survey_Question10 <- as.factor(d4$Survey_Question10)
+
+chisq <- chisq.test(d4$Survey_Question1, d4$Survey_Question10)
+
+chisq1 <- chisq.test(d4$Survey_Question2, d4$Survey_Question10)
+
+chisq2 <- chisq.test(d4$Survey_Question3, d4$Survey_Question10)
+
+chisq3 <- chisq.test(d4$Survey_Question4, d4$Survey_Question10)
+
+chisq4 <- chisq.test(d4$Survey_Question5, d4$Survey_Question10)
+
+chisq5 <- chisq.test(d4$Survey_Question6, d4$Survey_Question10)
+
+chisq6 <- chisq.test(d4$Survey_Question7, d4$Survey_Question10)
+
+chisq7 <- chisq.test(d4$Survey_Question8, d4$Survey_Question10)
+
+chisq8 <- chisq.test(d4$Survey_Question9, d4$Survey_Question10)
+
+# Scatter Plot
+d5 <- subset(d3, select=c("Survey_Question1", "Survey_Question10"))
+d5$Survey_Question1 <- as.numeric(d5$Survey_Question1)
+d5$Survey_Question10 <- as.numeric(d5$Survey_Question10)
+colnames(d5)[1] <- ("Age")
+colnames(d5)[2] <- ("Math Score")
+
+
+v <- plot_ly(x = d5$Age, y = d5$`Math Score`, mode = "markers")  %>%
+  layout(title = 'Scatterplot of Math Score and Age',
+         xaxis = list(title = 'Age',
+                      zeroline = TRUE,
+                      range = c(6, 14)),
+         yaxis = list(title = 'Math Score',
+                      range = c(45, 105)))
+
+# Linear Regression
+d5 <- subset(d3, select=c("Survey_Question1", "Survey_Question10"))
+d5$Survey_Question1 <- as.numeric(d5$Survey_Question1)
+d5$Survey_Question10 <- as.numeric(d5$Survey_Question10)
+
+fit <- lm(d5$Survey_Question10 ~ d5$Survey_Question1, data = d5)
+
+formula <- y ~ x
+
+ggplot(d5, aes(x= d5$Survey_Question1, y= d5$Survey_Question10)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", formula = formula, se = F) +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+               label.x.npc = "right", label.y.npc = 0.15,
+               formula = formula, parse = TRUE, size = 3)
+
+```
+
